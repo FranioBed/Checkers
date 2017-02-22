@@ -72,26 +72,26 @@ public class GameManager : MonoBehaviour {
         {
             if (dir.x > 0)
             {
-                Debug.Log("Right");
-                curBoardPosX++;
+                Debug.Log("Swipe Right");
+                curBoardPosX--;
             }
             else
             {
-                Debug.Log("Left");
-                curBoardPosX--;
+                Debug.Log("Swipe Left");
+                curBoardPosX++;
             }
         }
         else
         {
             if (dir.y > 0)
             {
-                Debug.Log("Up");
-                curBoardPosY++;
+                Debug.Log("Swipe Up");
+                curBoardPosY--;
             }
             else
             {
-                Debug.Log("Down");
-                curBoardPosY--;
+                Debug.Log("Swipe Down");
+                curBoardPosY++;
             }
         }
 
