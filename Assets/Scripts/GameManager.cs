@@ -134,7 +134,7 @@ public class GameManager : MonoBehaviour {
                         tmpObject.transform.localPosition = new Vector3(i, j, 0);
                         tmpObject.transform.SetParent(checkerObject.transform);
                         checkers[i,j] = tmpObject.GetComponent<Checker>();
-                        checkers[i, j].color = true;
+                        checkers[i,j].color = true;
                     }
                     if (boardSize-4<j)//generate white
                     {
