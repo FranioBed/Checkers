@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour {
                         tmpObject.transform.SetParent(checkerObject.transform);
                         checkers[i, j] = tmpObject.GetComponent<Checker>();
                         checkers[i, j].color = true;
+                        checkers[i, j].UpdatePosition(i, j);
                     }
                     if (boardSize - 4 < j)//generate white
                     {
@@ -92,6 +93,7 @@ public class GameManager : MonoBehaviour {
                         tmpObject.transform.SetParent(checkerObject.transform);
                         checkers[i, j] = tmpObject.GetComponent<Checker>();
                         checkers[i, j].color = false;
+                        checkers[i, j].UpdatePosition(i, j);
                     }
 
                 }
@@ -103,6 +105,31 @@ public class GameManager : MonoBehaviour {
                 boardField[i, j].transform.localPosition = new Vector3(i, j, 0);
             }
         }
+    }
+
+    List<Vector2> findAllMoves(Checker checker)
+    {
+        List<Vector2> moveList = new List<Vector2>();
+        if(checker.Queen)
+        {
+
+        }
+        else
+        {
+            
+        }
+
+        return moveList;
+    }
+
+    bool canMoveToPosition(int[] from, int[] destination)
+    {
+        if (from[0] - destination[0] != from[1] - destination[1])
+            return false;
+        if (destination[0] < 0 && destination[1] < 0 && destination[0] >= boardSize && destination[1] >= boardSize)
+            return false;
+
+        return true;
     }
 
     void fullscreenFlickedHandler(object sender, EventArgs e)
