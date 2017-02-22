@@ -12,7 +12,6 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
-           // testuje
             //Alternative Singleton pattern
 
             //if (_instance == null)
@@ -53,18 +52,58 @@ public class GameManager : MonoBehaviour {
         _instance = this;
         DontDestroyOnLoad(gameObject);
     }
-
-	// Use this for initialization
+    
 	void Start () {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
         generateBoard();
-
     }
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    void generateBoard()
+    {
+        checkers = new Checker[boardSize, boardSize];
+        boardField = new GameObject[boardSize, boardSize];
+        GameObject boardObject = Instantiate(new GameObject("Board"), gameObject.transform);
+        boardObject.transform.localPosition = new Vector3(0, 0, 0.1f);
+        GameObject checkerObject = Instantiate(new GameObject("Checkers"), gameObject.transform);
+        checkerObject.transform.localPosition = new Vector3(0, 0, 0);
+
+        bool color = true;  //true means black, false white 
+        for (int i = 0; i < boardSize; i++)
+        {
+            color = !color;
+            for (int j = 0; j < boardSize; j++)
+            {
+                color = !color;
+                if (color)
+                {
+                    boardField[i, j] = Instantiate(blackField, boardObject.transform);
+                    if (j < 3)//generate red
+                    {
+                        GameObject tmpObject = Instantiate(checkerRed, checkerObject.transform);
+                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
+                        tmpObject.transform.SetParent(checkerObject.transform);
+                        checkers[i, j] = tmpObject.GetComponent<Checker>();
+                        checkers[i, j].color = true;
+                    }
+                    if (boardSize - 4 < j)//generate white
+                    {
+                        GameObject tmpObject = Instantiate(checkerWhite, checkerObject.transform);
+                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
+                        tmpObject.transform.SetParent(checkerObject.transform);
+                        checkers[i, j] = tmpObject.GetComponent<Checker>();
+                        checkers[i, j].color = false;
+                    }
+
+                }
+                else
+                {
+                    boardField[i, j] = Instantiate(whiteField, boardObject.transform);
+                }
+                boardField[i, j].transform.SetParent(boardObject.transform);
+                boardField[i, j].transform.localPosition = new Vector3(i, j, 0);
+            }
+        }
+    }
 
     void fullscreenFlickedHandler(object sender, EventArgs e)
     {
@@ -108,54 +147,4 @@ public class GameManager : MonoBehaviour {
     {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked -= fullscreenFlickedHandler;
     }
-
-    void generateBoard()
-    {
-        checkers = new Checker[boardSize, boardSize];
-        boardField = new GameObject[boardSize, boardSize];
-        GameObject boardObject =  Instantiate(new GameObject("Board"), gameObject.transform);
-        boardObject.transform.localPosition = new Vector3(0, 0, 0.1f);
-        GameObject checkerObject = Instantiate(new GameObject("Chekers"), gameObject.transform);
-        checkerObject.transform.localPosition = new Vector3(0, 0, 0);
-
-        bool color = true;  //true mean black, false white 
-        for (int i = 0; i < boardSize; i++)
-        {
-            color = !color;
-            for (int j = 0; j < boardSize; j++)
-            {
-                color = !color;
-                if (color)
-                {
-                    boardField[i, j] = Instantiate(blackField, boardObject.transform);
-                    if (j < 3)//generate red
-                    {
-                        GameObject tmpObject = Instantiate(checkerRed, checkerObject.transform);
-                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
-                        tmpObject.transform.SetParent(checkerObject.transform);
-                        checkers[i,j] = tmpObject.GetComponent<Checker>();
-                        checkers[i,j].color = true;
-                    }
-                    if (boardSize-4<j)//generate white
-                    {
-                        GameObject tmpObject = Instantiate(checkerWhite, checkerObject.transform);
-                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
-                        tmpObject.transform.SetParent(checkerObject.transform);
-                        checkers[i, j] = tmpObject.GetComponent<Checker>();
-                        checkers[i, j].color = false;
-                    }
-
-                }
-                else
-                {
-                    boardField[i, j] = Instantiate(whiteField, boardObject.transform);
-                }
-                boardField[i, j].transform.SetParent(boardObject.transform);
-                boardField[i, j].transform.localPosition = new Vector3(i, j, 0);
-            }
-        }
-
-
-    }
-
 }
