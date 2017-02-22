@@ -41,6 +41,10 @@ public class GameManager : MonoBehaviour {
     GameObject[,] board;
     static int curBoardPosX = 0;
     static int curBoardPosY = 0;
+    bool curPlayer = false;         //false for white, true for red;
+    bool moveSelection = false;     //flag for move selection stage
+    int selectedMoveIndex;
+    List<Vector2> moveList;
 
     public GameObject fullscreenLayer;
     void Awake()
@@ -57,6 +61,7 @@ public class GameManager : MonoBehaviour {
     
 	void Start () {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
+        fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
         findAllMoves(checkers[2, 2]);
     }
@@ -196,42 +201,101 @@ public class GameManager : MonoBehaviour {
 
         Vector2 dir = gesture.ScreenFlickVector;
 
-        if (Math.Abs(dir.x) > Math.Abs(dir.y))
+        if (moveSelection)
         {
             if (dir.x > 0)
             {
-                Debug.Log("Swipe Right");
-                curBoardPosX--;
+                selectedMoveIndex++;
+                selectedMoveIndex %= (moveList.Count + 1);
             }
             else
             {
-                Debug.Log("Swipe Left");
-                curBoardPosX++;
+                selectedMoveIndex--;
+                selectedMoveIndex %= (moveList.Count + 1);
+            }
+            Debug.Log("Move: " + selectedMoveIndex);
+        }
+        else
+        {
+            if (Math.Abs(dir.x) > Math.Abs(dir.y))
+            {
+                if (dir.x > 0)
+                {
+                    Debug.Log("Swipe Right");
+                    curBoardPosX--;
+                }
+                else
+                {
+                    Debug.Log("Swipe Left");
+                    curBoardPosX++;
+                }
+            }
+            else
+            {
+                if (dir.y > 0)
+                {
+                    Debug.Log("Swipe Up");
+                    curBoardPosY--;
+                }
+                else
+                {
+                    Debug.Log("Swipe Down");
+                    curBoardPosY++;
+                }
+            }
+
+            curBoardPosX = curBoardPosX.Clamp(0, boardSize);
+            curBoardPosY = curBoardPosY.Clamp(0, boardSize);
+            Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
+            fieldSelector.transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, 0.05f);
+            Debug.Log(curBoardPosX + "," + curBoardPosY);
+        }
+    }
+
+    void onFullscreenTap(object sender, EventArgs e)
+    {
+        if (moveSelection)
+        {
+            if (selectedMoveIndex != moveList.Count)
+            {
+                
+            }
+            moveSelection = false;
+            moveList.Clear();
+        }
+        else if (checkers[curBoardPosX,curBoardPosY] != null)
+        {
+            Checker cur = checkers[curBoardPosX, curBoardPosY];
+            if (cur.color == curPlayer)
+            {
+                moveList = findAllMoves(cur);
+                selectedMoveIndex = moveList.Count;
+                if (selectedMoveIndex > 0)
+                {
+                    moveSelection = true;
+                }
+                else
+                {
+                    //TODO: message for player
+                    Debug.Log("No possible moves for this pawn");
+                }
+            }
+            else
+            {
+                //TODO: message for player
+                Debug.Log("Invalid pawn color");
             }
         }
         else
         {
-            if (dir.y > 0)
-            {
-                Debug.Log("Swipe Up");
-                curBoardPosY--;
-            }
-            else
-            {
-                Debug.Log("Swipe Down");
-                curBoardPosY++;
-            }
+            //TODO: message for player
+            Debug.Log("No pawn to move");
         }
-
-        curBoardPosX = curBoardPosX.Clamp(0, boardSize);
-        curBoardPosY = curBoardPosY.Clamp(0, boardSize);
-        Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
-        fieldSelector.transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, 0.05f);
-        Debug.Log(curBoardPosX + "," + curBoardPosY);
     }
 
     void onDestroy()
     {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked -= fullscreenFlickedHandler;
+        fullscreenLayer.GetComponent<TapGesture>().Tapped -= onFullscreenTap;
     }
 }
