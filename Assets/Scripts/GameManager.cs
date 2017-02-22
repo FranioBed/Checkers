@@ -63,8 +63,8 @@ public class GameManager : MonoBehaviour {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
-        findAllClearMoves(checkers[2, 2]);
-        findAllCaptureMoves(checkers[2, 2]);
+        //findAllClearMoves(checkers[2, 2]);
+        //findAllCaptureMoves(checkers[2, 2]);
     }
 
     void generateBoard()
@@ -86,12 +86,12 @@ public class GameManager : MonoBehaviour {
                 if (color)
                 {
                     board[i, j] = Instantiate(blackField, boardObject.transform);
-                    /*
-                    if (j < 3)//generate red
+
+                    if (j < (boardSize/2-1))//generate red
                         createChecker(checkerObject.transform, true, new int[] { i, j });
-                    if (boardSize - 4 < j)//generate white
+                    if (boardSize/2 < j)//generate white
                         createChecker(checkerObject.transform, false, new int[] { i, j });
-*/
+
 
                 }
                 else
@@ -102,14 +102,14 @@ public class GameManager : MonoBehaviour {
                 board[i, j].transform.localPosition = new Vector3(i, j, 0);
             }
         }
-        createChecker(checkerObject.transform,true, new int[] { 2, 2 });
-        checkers[2, 2].queen = true;
-        createChecker(checkerObject.transform, false, new int[] { 3, 3 });
-        createChecker(checkerObject.transform, false, new int[] { 5, 5 });
-        createChecker(checkerObject.transform, false, new int[] { 1, 3 });
-        createChecker(checkerObject.transform, false, new int[] { 0, 4 });
-        createChecker(checkerObject.transform, false, new int[] { 1, 1 });
-        createChecker(checkerObject.transform, false, new int[] { 3, 1 });
+        //createChecker(checkerObject.transform,true, new int[] { 2, 2 });
+        //checkers[2, 2].queen = true;
+        //createChecker(checkerObject.transform, false, new int[] { 3, 3 });
+        //createChecker(checkerObject.transform, false, new int[] { 5, 5 });
+        //createChecker(checkerObject.transform, false, new int[] { 1, 3 });
+        //createChecker(checkerObject.transform, false, new int[] { 0, 4 });
+        //createChecker(checkerObject.transform, false, new int[] { 1, 1 });
+        //createChecker(checkerObject.transform, false, new int[] { 3, 1 });
 
     }
 
@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour {
         List<Vector2> moveCaptureList = new List<Vector2>();
         if (checker.queen)
         {
-            moveCaptureList = findAllQuennMoves(checker, true);
+            moveCaptureList = findAllQueenMoves(checker, true);
         }
         else
         {
@@ -183,7 +183,7 @@ public class GameManager : MonoBehaviour {
         List<Vector2> moveList = new List<Vector2>();
         if (checker.queen)
         {
-            moveList = findAllQuennMoves(checker, false);
+            moveList = findAllQueenMoves(checker, false);
         }
         else
         {
@@ -207,7 +207,7 @@ public class GameManager : MonoBehaviour {
         return moveList;
     }
 
-    List<Vector2> findAllQuennMoves(Checker checker, bool capture)
+    List<Vector2> findAllQueenMoves(Checker checker, bool capture)
     {
         int[] checkerPosition = checker.GetPosition();
         List<Vector2> moveList = new List<Vector2>();
@@ -435,7 +435,7 @@ public class GameManager : MonoBehaviour {
             Checker cur = checkers[curBoardPosX, curBoardPosY];
             if (cur.color == curPlayer)
             {
-                moveList = findAllMoves(cur);
+                moveList = findAllClearMoves(cur);
                 selectedMoveIndex = moveList.Count;
                 if (selectedMoveIndex > 0)
                 {
