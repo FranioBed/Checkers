@@ -17,6 +17,7 @@ public class Checker : MonoBehaviour {
 	public void SetPosition (int x, int y) {
         posX = x;
         posY = y;
+        transform.localPosition = new Vector3(x, y, 0);
 	}
 
     public int[] GetPosition()

@@ -37,7 +37,7 @@ public class GameManager : MonoBehaviour {
     public GameObject checkerWhite;
 
     const int boardSize = 8;
-    Checker [,] checkers;
+    Checker [,] checkersOnBoard;
     GameObject[,] board;
     static int curBoardPosX = 0;
     static int curBoardPosY = 0;
@@ -45,7 +45,7 @@ public class GameManager : MonoBehaviour {
     bool moveSelection = false;     //flag for move selection stage
     int selectedMoveIndex;
     List<Vector2> moveList;
-    List<GameObject> moveSelectors;
+    List<GameObject> moveSelectorList;
 
     public GameObject fullscreenLayer;
     void Awake()
@@ -57,6 +57,7 @@ public class GameManager : MonoBehaviour {
         }
 
         _instance = this;
+        moveSelectorList = new List<GameObject>();
         DontDestroyOnLoad(gameObject);
     }
     
@@ -70,7 +71,7 @@ public class GameManager : MonoBehaviour {
 
     void generateBoard()
     {
-        checkers = new Checker[boardSize, boardSize];
+        checkersOnBoard = new Checker[boardSize, boardSize];
         board = new GameObject[boardSize, boardSize];
         GameObject boardObject = Instantiate(new GameObject("Board"), gameObject.transform);
         boardObject.transform.localPosition = new Vector3(0, 0, 0.1f);
@@ -124,7 +125,7 @@ public class GameManager : MonoBehaviour {
         tmpObject.transform.localPosition = new Vector3(position[0], position[1], 0);
         tmpObject.transform.SetParent(transform);
         Checker checker = tmpObject.GetComponent<Checker>();
-        checkers[position[0], position[1]] = checker;
+        checkersOnBoard[position[0], position[1]] = checker;
         checker.color = color;
         checker.SetPosition(position[0], position[1]);
     }
@@ -144,25 +145,25 @@ public class GameManager : MonoBehaviour {
             int side = -1;
             if (checker.color)
                 side = 1;
-            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side] != null)                             //right up and destroy
-                if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side].color != checker.color)
+            if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side] != null)                             //right up and destroy
+                if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side }))
                         moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side));
 
-            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //left up and destroy
-                if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
+            if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //left up and destroy
+                if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side }))
                         moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side));
 
 
-            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //right down and destroy
-                if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
+            if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //right down and destroy
+                if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side }))
                         moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side));
 
 
-            if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side] != null)                             //right up and destroy
-                if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
+            if (checkersOnBoard[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side] != null)                             //right up and destroy
+                if (checkersOnBoard[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 2 * side, checkerPosition[1] - 2 * side }))
                         moveCaptureList.Add(new Vector2(checkerPosition[0] - 2 * side, checkerPosition[1] - 2 * side));
 
@@ -173,7 +174,7 @@ public class GameManager : MonoBehaviour {
         {
             GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
             tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
-            
+            moveSelectorList.Add(tmpObject);
         }
 
         return moveCaptureList;
@@ -204,6 +205,7 @@ public class GameManager : MonoBehaviour {
         {
             GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
             tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+            moveSelectorList.Add(tmpObject);
         }
 
         return moveList;
@@ -222,9 +224,9 @@ public class GameManager : MonoBehaviour {
         {
             tmpPosition[0]++;
             tmpPosition[1]++;
-            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            if (checkersOnBoard[tmpPosition[0], tmpPosition[1]] != null)
             {
-                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                if (checkersOnBoard[tmpPosition[0], tmpPosition[1]].color == checker.color)
                     break;
                 if (blockMove)
                 {
@@ -255,9 +257,9 @@ public class GameManager : MonoBehaviour {
             tmpPosition[0]--;
             tmpPosition[1]++;
 
-            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            if (checkersOnBoard[tmpPosition[0], tmpPosition[1]] != null)
             {
-                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                if (checkersOnBoard[tmpPosition[0], tmpPosition[1]].color == checker.color)
                     break;
                 if (blockMove)
                 {
@@ -289,9 +291,9 @@ public class GameManager : MonoBehaviour {
             tmpPosition[0]++;
             tmpPosition[1]--;
 
-            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            if (checkersOnBoard[tmpPosition[0], tmpPosition[1]] != null)
             {
-                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                if (checkersOnBoard[tmpPosition[0], tmpPosition[1]].color == checker.color)
                     break;
                 if (blockMove)
                 {
@@ -323,9 +325,9 @@ public class GameManager : MonoBehaviour {
             tmpPosition[0]--;
             tmpPosition[1]--;
 
-            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            if (checkersOnBoard[tmpPosition[0], tmpPosition[1]] != null)
             {
-                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                if (checkersOnBoard[tmpPosition[0], tmpPosition[1]].color == checker.color)
                     break;
                 if (blockMove)
                 {
@@ -359,7 +361,7 @@ public class GameManager : MonoBehaviour {
         if (destination[0] < 0 && destination[1] < 0 && destination[0] >= boardSize && destination[1] >= boardSize)
             return false;
 
-        if (checkers[destination[0], destination[1]] != null)
+        if (checkersOnBoard[destination[0], destination[1]] != null)
             return false;
         return true;
     }
@@ -427,14 +429,27 @@ public class GameManager : MonoBehaviour {
         {
             if (selectedMoveIndex != moveList.Count)
             {
-                
+                int x = (int)moveList[selectedMoveIndex].x;
+                int y = (int)moveList[selectedMoveIndex].y;
+                checkersOnBoard[x, y] = checkersOnBoard[curBoardPosX, curBoardPosY];
+                checkersOnBoard[curBoardPosX, curBoardPosY] = null;
+                checkersOnBoard[x, y].SetPosition(x, y);
+                curBoardPosX = x;
+                curBoardPosY = y;
+                fieldSelector.transform.position = new Vector3(x, y, 0);
+                curPlayer = !curPlayer;
             }
+            foreach (GameObject go in moveSelectorList)
+            {
+                Destroy(go);
+            }
+            moveSelectorList.Clear();
             moveSelection = false;
             moveList.Clear();
         }
-        else if (checkers[curBoardPosX,curBoardPosY] != null)
+        else if (checkersOnBoard[curBoardPosX,curBoardPosY] != null)
         {
-            Checker cur = checkers[curBoardPosX, curBoardPosY];
+            Checker cur = checkersOnBoard[curBoardPosX, curBoardPosY];
             if (cur.color == curPlayer)
             {
                 moveList = findAllClearMoves(cur);
