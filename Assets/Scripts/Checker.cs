@@ -4,13 +4,22 @@ using UnityEngine;
 
 public class Checker : MonoBehaviour {
 
+    private int posX;
+    private int posY;
+    
+    
 	// Use this for initialization
 	void Start () {
 		
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
+	void UpdatePosition (int x, int y) {
+        posX = x;
+        posY = y;
 	}
+
+    int[] GetPosition()
+    {
+        return new int [] {posX, posY };
+    }
 }
