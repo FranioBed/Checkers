@@ -19,7 +19,7 @@ public class Checker : MonoBehaviour {
         posY = y;
 	}
 
-    int[] GetPosition()
+    public int[] GetPosition()
     {
         return new int [] {posX, posY };
     }

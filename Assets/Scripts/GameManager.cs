@@ -58,6 +58,7 @@ public class GameManager : MonoBehaviour {
 	void Start () {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
         generateBoard();
+        findAllMoves(checkers[2, 2]);
     }
 
     void generateBoard()
@@ -79,24 +80,13 @@ public class GameManager : MonoBehaviour {
                 if (color)
                 {
                     board[i, j] = Instantiate(blackField, boardObject.transform);
+                    /*
                     if (j < 3)//generate red
-                    {
-                        GameObject tmpObject = Instantiate(checkerRed, checkerObject.transform);
-                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
-                        tmpObject.transform.SetParent(checkerObject.transform);
-                        checkers[i, j] = tmpObject.GetComponent<Checker>();
-                        checkers[i, j].color = true;
-                        checkers[i, j].UpdatePosition(i, j);
-                    }
+                        createChecker(checkerObject.transform, true, new int[] { i, j });
                     if (boardSize - 4 < j)//generate white
-                    {
-                        GameObject tmpObject = Instantiate(checkerWhite, checkerObject.transform);
-                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
-                        tmpObject.transform.SetParent(checkerObject.transform);
-                        checkers[i, j] = tmpObject.GetComponent<Checker>();
-                        checkers[i, j].color = false;
-                        checkers[i, j].UpdatePosition(i, j);
-                    }
+                        createChecker(checkerObject.transform, false, new int[] { i, j });
+*/
+
                 }
                 else
                 {
@@ -106,18 +96,85 @@ public class GameManager : MonoBehaviour {
                 board[i, j].transform.localPosition = new Vector3(i, j, 0);
             }
         }
+        createChecker(checkerObject.transform,true, new int[] { 2, 2 });
+        createChecker(checkerObject.transform, false, new int[] { 3, 3 });
+        createChecker(checkerObject.transform, false, new int[] { 1, 3 });
+        createChecker(checkerObject.transform, false, new int[] { 0, 4 });
+        createChecker(checkerObject.transform, false, new int[] { 1, 1 });
+        createChecker(checkerObject.transform, false, new int[] { 3, 1 });
+
+    }
+
+    void createChecker(Transform transform, bool color, int[] position)
+    {
+        GameObject tmpObject;
+        if (color)
+            tmpObject = Instantiate(checkerRed, transform);
+        else
+            tmpObject = Instantiate(checkerWhite, transform);
+        tmpObject.transform.localPosition = new Vector3(position[0], position[1], 0);
+        tmpObject.transform.SetParent(transform);
+        Checker checker = tmpObject.GetComponent<Checker>();
+        checkers[position[0], position[1]] = checker;
+        checker.color = color;
+        checker.SetPosition(position[0], position[1]);
     }
 
     List<Vector2> findAllMoves(Checker checker)
     {
         List<Vector2> moveList = new List<Vector2>();
-        if(checker.Queen)
+        List<Vector2> moveCaptureList = new List<Vector2>();
+        if (checker.Queen)
         {
 
         }
         else
         {
-            
+            int[] checkerPosition = checker.GetPosition();
+            int side = -1;
+            if (checker.color)
+                side = 1;
+            if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0]+1 * side, checkerPosition[1]+1 * side }))  //right up
+                moveList.Add(new Vector2(checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side));
+            else 
+            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side] !=null)                             //right up and capture
+                if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side].color != checker.color)
+                    if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side }))
+                        moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side));
+
+            if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side }))  //left up
+                moveList.Add(new Vector2(checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side));
+            else
+            if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side] != null)                             //left up and capture
+                if (checkers[checkerPosition[0] - 1, checkerPosition[1] + 1].color != checker.color)
+                    if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 2 * side, checkerPosition[1] + 2 * side }))
+                        moveCaptureList.Add(new Vector2(checkerPosition[0] - 2 * side, checkerPosition[1] + 2 * side));
+
+
+            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //right down and destroy
+                if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
+                    if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side }))
+                        moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side));
+
+
+            if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side] != null)                             //right down and destroy
+                if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
+                    if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 2 * side, checkerPosition[1] - 2 * side }))
+                        moveCaptureList.Add(new Vector2(checkerPosition[0] - 2 * side, checkerPosition[1] -2 * side));
+
+
+            foreach (Vector2 position in moveList)
+            {
+                GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
+                tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+            }
+
+            foreach (Vector2 position in moveCaptureList)
+            {
+                GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
+                tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+            }
+
         }
 
         return moveList;
@@ -125,11 +182,11 @@ public class GameManager : MonoBehaviour {
 
     bool canMoveToPosition(int[] from, int[] destination)
     {
-        if (from[0] - destination[0] != from[1] - destination[1])
-            return false;
         if (destination[0] < 0 && destination[1] < 0 && destination[0] >= boardSize && destination[1] >= boardSize)
             return false;
 
+        if (checkers[destination[0], destination[1]] != null)
+            return false;
         return true;
     }
 
