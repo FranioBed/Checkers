@@ -30,11 +30,12 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public Sprite black;
-    public Sprite white;
+    public GameObject blackField;
+    public GameObject whiteField;
 
-    const int boardSize = 8;
-    CheckerField [,] board;
+    int boardSize;
+    Checker [,] board;
+    GameObject[,] boardField;
     static int curBoardPosX = 0;
     static int curBoardPosY = 0;
 
@@ -53,7 +54,6 @@ public class GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        board = new CheckerField[boardSize, boardSize];
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
 	}
 	
@@ -104,4 +104,20 @@ public class GameManager : MonoBehaviour {
     {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked -= fullscreenFlickedHandler;
     }
+
+    void generateBoard(int boardSize)
+    {
+        this.boardSize = boardSize;
+        board = new Checker[boardSize, boardSize];
+        boardField = new GameObject[boardSize, boardSize];
+
+        for (int i = 0; i < boardSize; i++)
+        {
+            for (int j = 0; j < boardSize; j++)
+            {
+
+            }
+        }
+    }
+
 }

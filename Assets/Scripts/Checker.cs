@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckerField : MonoBehaviour {
+public class Checker : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
