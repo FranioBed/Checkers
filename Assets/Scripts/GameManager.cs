@@ -30,6 +30,9 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public Sprite black;
+    public Sprite white;
+
     const int boardSize = 8;
     CheckerField [,] board;
     static int curBoardPosX = 0;
