@@ -63,7 +63,8 @@ public class GameManager : MonoBehaviour {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
-        findAllMoves(checkers[2, 2]);
+        findAllClearMoves(checkers[2, 2]);
+        findAllCaptureMoves(checkers[2, 2]);
     }
 
     void generateBoard()
@@ -102,7 +103,9 @@ public class GameManager : MonoBehaviour {
             }
         }
         createChecker(checkerObject.transform,true, new int[] { 2, 2 });
+        checkers[2, 2].queen = true;
         createChecker(checkerObject.transform, false, new int[] { 3, 3 });
+        createChecker(checkerObject.transform, false, new int[] { 5, 5 });
         createChecker(checkerObject.transform, false, new int[] { 1, 3 });
         createChecker(checkerObject.transform, false, new int[] { 0, 4 });
         createChecker(checkerObject.transform, false, new int[] { 1, 1 });
@@ -125,35 +128,30 @@ public class GameManager : MonoBehaviour {
         checker.SetPosition(position[0], position[1]);
     }
 
-    List<Vector2> findAllMoves(Checker checker)
-    {
-        List<Vector2> moveList = new List<Vector2>();
-        List<Vector2> moveCaptureList = new List<Vector2>();
-        if (checker.Queen)
-        {
 
+    List<Vector2> findAllCaptureMoves(Checker checker)
+    {
+        int[] checkerPosition = checker.GetPosition();
+        List<Vector2> moveCaptureList = new List<Vector2>();
+        if (checker.queen)
+        {
+            moveCaptureList = findAllQuennMoves(checker, true);
         }
         else
         {
-            int[] checkerPosition = checker.GetPosition();
+           
             int side = -1;
             if (checker.color)
                 side = 1;
-            if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0]+1 * side, checkerPosition[1]+1 * side }))  //right up
-                moveList.Add(new Vector2(checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side));
-            else 
-            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side] !=null)                             //right up and capture
+            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side] != null)                             //right up and destroy
                 if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side }))
                         moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side));
 
-            if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side }))  //left up
-                moveList.Add(new Vector2(checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side));
-            else
-            if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side] != null)                             //left up and capture
-                if (checkers[checkerPosition[0] - 1, checkerPosition[1] + 1].color != checker.color)
-                    if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 2 * side, checkerPosition[1] + 2 * side }))
-                        moveCaptureList.Add(new Vector2(checkerPosition[0] - 2 * side, checkerPosition[1] + 2 * side));
+            if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //left up and destroy
+                if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
+                    if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side }))
+                        moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side));
 
 
             if (checkers[checkerPosition[0] + 1 * side, checkerPosition[1] - 1 * side] != null)                             //right down and destroy
@@ -162,26 +160,195 @@ public class GameManager : MonoBehaviour {
                         moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side));
 
 
-            if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side] != null)                             //right down and destroy
+            if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side] != null)                             //right up and destroy
                 if (checkers[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 2 * side, checkerPosition[1] - 2 * side }))
-                        moveCaptureList.Add(new Vector2(checkerPosition[0] - 2 * side, checkerPosition[1] -2 * side));
+                        moveCaptureList.Add(new Vector2(checkerPosition[0] - 2 * side, checkerPosition[1] - 2 * side));
+
+        }
 
 
-            foreach (Vector2 position in moveList)
+        foreach (Vector2 position in moveCaptureList)
+        {
+            GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
+            tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+        }
+
+        return moveCaptureList;
+    }
+
+
+    List<Vector2> findAllClearMoves(Checker checker)
+    {
+        List<Vector2> moveList = new List<Vector2>();
+        if (checker.queen)
+        {
+            moveList = findAllQuennMoves(checker, false);
+        }
+        else
+        {
+            int[] checkerPosition = checker.GetPosition();
+            int side = -1;
+            if (checker.color)
+                side = 1;
+            if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side }))  //right up
+                moveList.Add(new Vector2(checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side));
+
+            if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side }))  //left up
+                moveList.Add(new Vector2(checkerPosition[0] - 1 * side, checkerPosition[1] + 1 * side));
+        }
+
+        foreach (Vector2 position in moveList)
+        {
+            GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
+            tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+        }
+
+        return moveList;
+    }
+
+    List<Vector2> findAllQuennMoves(Checker checker, bool capture)
+    {
+        int[] checkerPosition = checker.GetPosition();
+        List<Vector2> moveList = new List<Vector2>();
+        List<Vector2> moveCaptureList = new List<Vector2>();
+        
+        int[] tmpPosition = new int[] { checkerPosition[0], checkerPosition[1] };
+        bool blockMove = false;
+        bool findEnemy = false;
+        while (tmpPosition[0] < boardSize - 1 && tmpPosition[1] < boardSize - 1)  //right up
+        {
+            tmpPosition[0]++;
+            tmpPosition[1]++;
+            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
             {
-                GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
-                tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                    break;
+                if (blockMove)
+                {
+                    break;
+                }
+                else
+                {
+                    blockMove = true;
+                    findEnemy = true;
+                }
             }
-
-            foreach (Vector2 position in moveCaptureList)
+            else
             {
-                GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
-                tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+                if (blockMove)
+                    blockMove = false;
+                if (findEnemy)
+                    moveCaptureList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+                else
+                    moveList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+            }
+        }
+
+        tmpPosition = new int[] { checkerPosition[0], checkerPosition[1] };
+        blockMove = false;
+        findEnemy = false;
+        while (tmpPosition[0] > 0 && tmpPosition[1] < boardSize - 1)  //left up
+        {
+            tmpPosition[0]--;
+            tmpPosition[1]++;
+
+            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            {
+                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                    break;
+                if (blockMove)
+                {
+                    break;
+                }
+                else
+                {
+                    blockMove = true;
+                    findEnemy = true;
+                }
+            }
+            else
+            {
+                if (blockMove)
+                    blockMove = false;
+                if (findEnemy)
+                    moveCaptureList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+                else
+                    moveList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
             }
 
         }
 
+        tmpPosition = new int[] { checkerPosition[0], checkerPosition[1] };
+        blockMove = false;
+        findEnemy = false;
+        while (tmpPosition[0] < boardSize - 1 && tmpPosition[1] > 0)  //right down
+        {
+            tmpPosition[0]++;
+            tmpPosition[1]--;
+
+            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            {
+                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                    break;
+                if (blockMove)
+                {
+                    break;
+                }
+                else
+                {
+                    blockMove = true;
+                    findEnemy = true;
+                }
+            }
+            else
+            {
+                if (blockMove)
+                    blockMove = false;
+                if (findEnemy)
+                    moveCaptureList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+                else
+                    moveList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+            }
+
+        }
+
+        tmpPosition = new int[] { checkerPosition[0], checkerPosition[1] };
+        blockMove = false;
+        findEnemy = false;
+        while (tmpPosition[0] > 0 && tmpPosition[1] > 0)  //left down
+        {
+            tmpPosition[0]--;
+            tmpPosition[1]--;
+
+            if (checkers[tmpPosition[0], tmpPosition[1]] != null)
+            {
+                if (checkers[tmpPosition[0], tmpPosition[1]].color == checker.color)
+                    break;
+                if (blockMove)
+                {
+                    break;
+                }
+                else
+                {
+                    blockMove = true;
+                    findEnemy = true;
+                }
+            }
+            else
+            {
+                if (blockMove)
+                    blockMove = false;
+                if (findEnemy)
+                    moveCaptureList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+                else
+                    moveList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
+            }
+
+        }
+
+        if (capture)
+            return moveCaptureList;
         return moveList;
     }
 

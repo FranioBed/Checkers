@@ -7,7 +7,7 @@ public class Checker : MonoBehaviour {
     private int posX;
     private int posY;
     public bool color;  //true means red, false white 
-    public bool Queen = false;
+    public bool queen = false;
 
 
     void Start () {
