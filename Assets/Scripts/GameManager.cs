@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    public GameObject fieldSelector;
+    public GameObject moveSelector;
     public GameObject blackField;
     public GameObject whiteField;
     public GameObject checkerRed;
@@ -36,7 +38,7 @@ public class GameManager : MonoBehaviour {
 
     const int boardSize = 8;
     Checker [,] checkers;
-    GameObject[,] boardField;
+    GameObject[,] board;
     static int curBoardPosX = 0;
     static int curBoardPosY = 0;
 
@@ -61,7 +63,7 @@ public class GameManager : MonoBehaviour {
     void generateBoard()
     {
         checkers = new Checker[boardSize, boardSize];
-        boardField = new GameObject[boardSize, boardSize];
+        board = new GameObject[boardSize, boardSize];
         GameObject boardObject = Instantiate(new GameObject("Board"), gameObject.transform);
         boardObject.transform.localPosition = new Vector3(0, 0, 0.1f);
         GameObject checkerObject = Instantiate(new GameObject("Checkers"), gameObject.transform);
@@ -76,7 +78,7 @@ public class GameManager : MonoBehaviour {
                 color = !color;
                 if (color)
                 {
-                    boardField[i, j] = Instantiate(blackField, boardObject.transform);
+                    board[i, j] = Instantiate(blackField, boardObject.transform);
                     if (j < 3)//generate red
                     {
                         GameObject tmpObject = Instantiate(checkerRed, checkerObject.transform);
@@ -95,14 +97,13 @@ public class GameManager : MonoBehaviour {
                         checkers[i, j].color = false;
                         checkers[i, j].UpdatePosition(i, j);
                     }
-
                 }
                 else
                 {
-                    boardField[i, j] = Instantiate(whiteField, boardObject.transform);
+                    board[i, j] = Instantiate(whiteField, boardObject.transform);
                 }
-                boardField[i, j].transform.SetParent(boardObject.transform);
-                boardField[i, j].transform.localPosition = new Vector3(i, j, 0);
+                board[i, j].transform.SetParent(boardObject.transform);
+                board[i, j].transform.localPosition = new Vector3(i, j, 0);
             }
         }
     }
@@ -167,6 +168,8 @@ public class GameManager : MonoBehaviour {
 
         curBoardPosX = curBoardPosX.Clamp(0, boardSize);
         curBoardPosY = curBoardPosY.Clamp(0, boardSize);
+        Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
+        fieldSelector.transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, 0.05f);
         Debug.Log(curBoardPosX + "," + curBoardPosY);
     }
 

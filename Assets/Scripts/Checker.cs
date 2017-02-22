@@ -14,7 +14,7 @@ public class Checker : MonoBehaviour {
 		
 	}
 	
-	public void UpdatePosition (int x, int y) {
+	public void SetPosition (int x, int y) {
         posX = x;
         posY = y;
 	}
