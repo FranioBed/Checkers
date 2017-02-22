@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour {
     bool moveSelection = false;     //flag for move selection stage
     int selectedMoveIndex;
     List<Vector2> moveList;
+    List<GameObject> moveSelectors;
 
     public GameObject fullscreenLayer;
     void Awake()
@@ -172,6 +173,7 @@ public class GameManager : MonoBehaviour {
         {
             GameObject tmpObject = Instantiate(moveSelector, gameObject.transform);
             tmpObject.transform.localPosition = new Vector3(position.x, position.y, -1);
+            
         }
 
         return moveCaptureList;
