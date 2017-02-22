@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
+           // testuje
             //Alternative Singleton pattern
 
             //if (_instance == null)
