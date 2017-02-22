@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TouchScript.Gestures;
 using UnityEngine;
+using ExtensionMethods;
 
 public class GameManager : MonoBehaviour {
 
@@ -29,9 +30,9 @@ public class GameManager : MonoBehaviour {
     }
 
     const int boardSize = 8;
-
     CheckerField [,] board;
-    static int curBoardPosX, curBoardPosY;
+    static int curBoardPosX = 0;
+    static int curBoardPosY = 0;
 
     public GameObject fullscreenLayer;
     void Awake()
@@ -59,7 +60,40 @@ public class GameManager : MonoBehaviour {
 
     void fullscreenFlickedHandler(object sender, EventArgs e)
     {
+        FlickGesture gesture = sender as FlickGesture;
 
+        Vector2 dir = gesture.ScreenFlickVector;
+
+        if (Math.Abs(dir.x) > Math.Abs(dir.y))
+        {
+            if (dir.x > 0)
+            {
+                Debug.Log("Right");
+                curBoardPosX++;
+            }
+            else
+            {
+                Debug.Log("Left");
+                curBoardPosX--;
+            }
+        }
+        else
+        {
+            if (dir.y > 0)
+            {
+                Debug.Log("Up");
+                curBoardPosY++;
+            }
+            else
+            {
+                Debug.Log("Down");
+                curBoardPosY--;
+            }
+        }
+
+        curBoardPosX = curBoardPosX.Clamp(0, boardSize);
+        curBoardPosY = curBoardPosY.Clamp(0, boardSize);
+        Debug.Log(curBoardPosX + "," + curBoardPosY);
     }
 
     void onDestroy()
