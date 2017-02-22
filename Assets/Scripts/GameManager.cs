@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour {
         GameObject checkerObject = Instantiate(new GameObject("Chekers"), gameObject.transform);
         checkerObject.transform.localPosition = new Vector3(0, 0, 0);
 
-        bool color = true;  //black mean true, white false
+        bool color = true;  //true mean black, false white 
         for (int i = 0; i < boardSize; i++)
         {
             color = !color;
@@ -130,10 +130,11 @@ public class GameManager : MonoBehaviour {
                     boardField[i, j] = Instantiate(blackField, boardObject.transform);
                     if (j < 3)//generate red
                     {
-                    GameObject tmpObject = Instantiate(checkerRed, checkerObject.transform);
-                    tmpObject.transform.localPosition = new Vector3(i, j, 0);
-                    tmpObject.transform.SetParent(checkerObject.transform);
-                    checkers[i,j] = tmpObject.GetComponent<Checker>();
+                        GameObject tmpObject = Instantiate(checkerRed, checkerObject.transform);
+                        tmpObject.transform.localPosition = new Vector3(i, j, 0);
+                        tmpObject.transform.SetParent(checkerObject.transform);
+                        checkers[i,j] = tmpObject.GetComponent<Checker>();
+                        checkers[i, j].color = true;
                     }
                     if (boardSize-4<j)//generate white
                     {
@@ -141,6 +142,7 @@ public class GameManager : MonoBehaviour {
                         tmpObject.transform.localPosition = new Vector3(i, j, 0);
                         tmpObject.transform.SetParent(checkerObject.transform);
                         checkers[i, j] = tmpObject.GetComponent<Checker>();
+                        checkers[i, j].color = false;
                     }
 
                 }

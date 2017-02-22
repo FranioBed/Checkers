@@ -6,10 +6,11 @@ public class Checker : MonoBehaviour {
 
     private int posX;
     private int posY;
-    
-    
-	// Use this for initialization
-	void Start () {
+    public bool color;  //true mean red, false white 
+
+
+    // Use this for initialization
+    void Start () {
 		
 	}
 	
