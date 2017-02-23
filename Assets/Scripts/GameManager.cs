@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour {
     bool moveSelection = false;     //flag for move selection stage
     int selectedMoveIndex;
     List<Vector2> moveList;
+    List<Checker> checkersToMove;
     List<GameObject> moveSelectorList;
 
     public GameObject fullscreenLayer;
@@ -58,6 +59,7 @@ public class GameManager : MonoBehaviour {
 
         _instance = this;
         moveSelectorList = new List<GameObject>();
+        checkersToMove = new List<Checker>();
         DontDestroyOnLoad(gameObject);
     }
     
@@ -65,6 +67,7 @@ public class GameManager : MonoBehaviour {
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
+        getAllMoves();
         //findAllClearMoves(checkers[2, 2]);
         //findAllCaptureMoves(checkers[2, 2]);
     }
@@ -385,6 +388,14 @@ public class GameManager : MonoBehaviour {
                 selectedMoveIndex %= (moveList.Count + 1);
             }
             Debug.Log("Move: " + selectedMoveIndex);
+            if (selectedMoveIndex == moveList.Count)
+            {
+                fieldSelector.transform.position = new Vector3(curBoardPosX, curBoardPosY, -0.1f);
+            }
+            else
+            {
+                fieldSelector.transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -0.1f);
+            }
         }
         else
         {
@@ -423,6 +434,28 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    void getAllMoves()
+    {
+        checkersToMove.Clear();
+        foreach (Checker checker in checkersOnBoard)
+        {
+            if (checker != null && checker.color == curPlayer && findAllCaptureMoves(checker).Count > 0)
+            {
+                checkersToMove.Add(checker);
+            }
+        }
+        if (checkersToMove.Count == 0)
+        {
+            foreach (Checker checker in checkersOnBoard)
+            {
+                if (checker != null && checker.color == curPlayer && findAllClearMoves(checker).Count > 0)
+                {
+                    checkersToMove.Add(checker);
+                }
+            }
+        }
+    }
+
     void onFullscreenTap(object sender, EventArgs e)
     {
         if (moveSelection)
@@ -436,7 +469,7 @@ public class GameManager : MonoBehaviour {
                 checkersOnBoard[x, y].SetPosition(x, y);
                 curBoardPosX = x;
                 curBoardPosY = y;
-                fieldSelector.transform.position = new Vector3(x, y, 0);
+                //fieldSelector.transform.position = new Vector3(x, y, 0);
                 curPlayer = !curPlayer;
             }
             foreach (GameObject go in moveSelectorList)
@@ -446,11 +479,12 @@ public class GameManager : MonoBehaviour {
             moveSelectorList.Clear();
             moveSelection = false;
             moveList.Clear();
+            getAllMoves();
         }
         else if (checkersOnBoard[curBoardPosX,curBoardPosY] != null)
         {
             Checker cur = checkersOnBoard[curBoardPosX, curBoardPosY];
-            if (cur.color == curPlayer)
+            if (checkersToMove.Contains(cur))
             {
                 moveList = findAllClearMoves(cur);
                 selectedMoveIndex = moveList.Count;
@@ -467,7 +501,7 @@ public class GameManager : MonoBehaviour {
             else
             {
                 //TODO: message for player
-                Debug.Log("Invalid pawn color");
+                Debug.Log("No possible move");
             }
         }
         else
