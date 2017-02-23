@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviour {
     public GameObject checkerRed;
     public GameObject checkerWhite;
 
-    const int boardSize = 8;
+    public int boardSize = 8;
     Checker [,] checkersOnBoard;
     GameObject[,] board;
     static int curBoardPosX = 0;
@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour {
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
         getAllMoves();
+        boardSize = PlayerPrefs.GetInt("BoardSize");
         //findAllClearMoves(checkers[2, 2]);
         //findAllCaptureMoves(checkers[2, 2]);
     }
