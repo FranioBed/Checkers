@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class Menu : MonoBehaviour, IPointerClickHandler {
 
@@ -42,7 +43,7 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
     {
         if (menuStep==1)
         {
-            //tu se uruchom scene
+            SceneManager.LoadScene(1);
         }
         else if(menuStep == 2)
         {

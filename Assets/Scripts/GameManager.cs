@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TouchScript.Gestures;
 using UnityEngine;
 using ExtensionMethods;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
 
@@ -478,6 +479,7 @@ public class GameManager : MonoBehaviour {
         if (checkersToMove.Count == 0)
         {
             //currentPlayerLost
+            SceneManager.LoadScene(0);
         }
     }
 
