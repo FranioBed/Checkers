@@ -62,7 +62,6 @@ public class GameManager : MonoBehaviour {
         moveSelectorList = new List<GameObject>();
         checkersToMove = new List<Checker>();
         takenList = new List<Checker>();
-        DontDestroyOnLoad(gameObject);
     }
     
 	void Start () {
@@ -475,6 +474,11 @@ public class GameManager : MonoBehaviour {
             Destroy(go);
         }
         moveSelectorList.Clear();
+
+        if (checkersToMove.Count == 0)
+        {
+            //currentPlayerLost
+        }
     }
 
     void onFullscreenTap(object sender, EventArgs e)

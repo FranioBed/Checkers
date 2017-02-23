@@ -35,6 +35,7 @@ public static class TTSManager
     public static readonly Locale ITALIAN = new Locale("Italian", "it");
     public static readonly Locale JAPANESE = new Locale("Japanese", "ja");
     public static readonly Locale KOREAN = new Locale("Korean", "ko");
+    public static readonly Locale POLISH = new Locale("Polish", "pl_PL");
     public static readonly Locale[] Locales;
     public const int SUCCESS = 0;
     public const int ERROR = -1;
@@ -50,7 +51,8 @@ public static class TTSManager
             GERMAN,
             ITALIAN,
             JAPANESE,
-            KOREAN
+            KOREAN,
+            POLISH
         };
     }
 
