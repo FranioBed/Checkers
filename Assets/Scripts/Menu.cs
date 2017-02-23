@@ -11,7 +11,7 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
     public GameObject startGame;
     public GameObject options;
     public GameObject eightBoardSize;
-    public GameObject tenBoardSize;
+    public GameObject teenBoardSize;
 
     GameObject menuTopText;
     GameObject menuBottomText;
@@ -40,29 +40,54 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
 
     void topMenuClick()
     {
-        Debug.Log("u gory");
+        if (menuStep==1)
+        {
+            //tu se uruchom scene
+        }
+        else if(menuStep == 2)
+        {
+
+            PlayerPrefs.SetInt("BoardSize", 8);
+            goMainMenu();
+        }
 
     }
     void botMenuClick()
     {
-        Debug.Log("na dole");
+        if (menuStep == 1)
+        {
+            goChooseVariant();
+        }
+        else if (menuStep == 2)
+        {
+            PlayerPrefs.SetInt("BoardSize", 10);
+            goMainMenu();
+        }
     }
 
     void goMainMenu()
     {
+        Debug.Log("2");
         deleteTexts();
         menuTopText = Instantiate(startGame, gameObject.transform);
-        menuTopText.transform.localPosition = new Vector3(0, -200, 0);
+        menuTopText.transform.SetParent(gameObject.transform, true);
+        menuTopText.transform.localPosition = new Vector3(0, 200, 0);
         menuBottomText = Instantiate(options, gameObject.transform);
-        menuBottomText.transform.localPosition = new Vector3(0,-600,0);
+        menuBottomText.transform.SetParent(gameObject.transform, false);
+        menuBottomText.transform.localPosition = new Vector3(0,-200,0);
         menuStep = 1;
     }
 
     void goChooseVariant()
     {
+        Debug.Log("3");
         deleteTexts();
         menuTopText = Instantiate(eightBoardSize, gameObject.transform);
-        menuBottomText = Instantiate(tenBoardSize, gameObject.transform);
+        menuTopText.transform.SetParent(gameObject.transform, true);
+        menuTopText.transform.localPosition = new Vector3(0, 200, 0);
+        menuBottomText = Instantiate(teenBoardSize, gameObject.transform);
+        menuBottomText.transform.SetParent(gameObject.transform, false);
+        menuBottomText.transform.localPosition = new Vector3(0, -200, 0);
         menuStep = 2;
     }
 

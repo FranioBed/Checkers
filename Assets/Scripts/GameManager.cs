@@ -69,6 +69,8 @@ public class GameManager : MonoBehaviour {
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
         getAllMoves();
+        if (PlayerPrefs.HasKey("BoardSize"))
+            boardSize = PlayerPrefs.GetInt("BoardSize");
         boardSize = PlayerPrefs.GetInt("BoardSize");
         //findAllClearMoves(checkers[2, 2]);
         //findAllCaptureMoves(checkers[2, 2]);
