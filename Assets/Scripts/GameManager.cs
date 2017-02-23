@@ -90,9 +90,9 @@ public class GameManager : MonoBehaviour {
                     board[i, j] = Instantiate(blackField, boardObject.transform);
 
                     if (j < (boardSize/2-1))//generate red
-                        createChecker(checkerObject.transform, true, new int[] { i, j });
-                    if (boardSize/2 < j)//generate white
                         createChecker(checkerObject.transform, false, new int[] { i, j });
+                    if (boardSize/2 < j)//generate white
+                        createChecker(checkerObject.transform, true, new int[] { i, j });
 
 
                 }
@@ -142,9 +142,9 @@ public class GameManager : MonoBehaviour {
         else
         {
            
-            int side = -1;
+            int side = 1;
             if (checker.color)
-                side = 1;
+                side = -1;
             if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side] != null)                             //right up and destroy
                 if (checkersOnBoard[checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side].color != checker.color)
                     if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] + 2 * side }))
@@ -191,9 +191,9 @@ public class GameManager : MonoBehaviour {
         else
         {
             int[] checkerPosition = checker.GetPosition();
-            int side = -1;
+            int side = 1;
             if (checker.color)
-                side = 1;
+                side = -1;
             if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side }))  //right up
                 moveList.Add(new Vector2(checkerPosition[0] + 1 * side, checkerPosition[1] + 1 * side));
 
