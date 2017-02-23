@@ -249,8 +249,6 @@ public class GameManager : MonoBehaviour {
             }
             else
             {
-                if (blockMove)
-                    blockMove = false;
                 if (findEnemy)
                     moveCaptureList.Add(new Vector2(tmpPosition[0], tmpPosition[1]));
                 else
