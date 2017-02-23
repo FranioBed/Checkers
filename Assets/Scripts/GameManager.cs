@@ -47,6 +47,7 @@ public class GameManager : MonoBehaviour {
     List<Vector2> moveList;
     List<Checker> checkersToMove;
     List<GameObject> moveSelectorList;
+    List<Checker> takenList;
 
     public GameObject fullscreenLayer;
     void Awake()
@@ -60,6 +61,7 @@ public class GameManager : MonoBehaviour {
         _instance = this;
         moveSelectorList = new List<GameObject>();
         checkersToMove = new List<Checker>();
+        takenList = new List<Checker>();
         DontDestroyOnLoad(gameObject);
     }
     
@@ -381,24 +383,33 @@ public class GameManager : MonoBehaviour {
 
         if (moveSelection)
         {
+            int mod = moveList.Count + 1;
+            if (takenList.Count > 0)
+            {
+                mod--;
+            }
             if (dir.x > 0)
             {
                 selectedMoveIndex++;
-                selectedMoveIndex %= (moveList.Count + 1);
+                selectedMoveIndex %= mod;
             }
             else
             {
                 selectedMoveIndex--;
-                selectedMoveIndex %= (moveList.Count + 1);
+                if (selectedMoveIndex < 0)
+                {
+                    selectedMoveIndex = mod - 1;
+                }
+                selectedMoveIndex %= mod;
             }
             Debug.Log("Move: " + selectedMoveIndex);
             if (selectedMoveIndex == moveList.Count)
             {
-                fieldSelector.transform.position = new Vector3(curBoardPosX, curBoardPosY, -0.1f);
+                fieldSelector.transform.position = new Vector3(curBoardPosX, curBoardPosY, -2f);
             }
             else
             {
-                fieldSelector.transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -0.1f);
+                fieldSelector.transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -2f);
             }
         }
         else
@@ -430,8 +441,8 @@ public class GameManager : MonoBehaviour {
                 }
             }
 
-            curBoardPosX = curBoardPosX.Clamp(0, boardSize);
-            curBoardPosY = curBoardPosY.Clamp(0, boardSize);
+            curBoardPosX = curBoardPosX.Clamp(0, boardSize-1);
+            curBoardPosY = curBoardPosY.Clamp(0, boardSize-1);
             Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
             fieldSelector.transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, 0.05f);
             Debug.Log(curBoardPosX + "," + curBoardPosY);
@@ -458,39 +469,112 @@ public class GameManager : MonoBehaviour {
                 }
             }
         }
+        foreach (GameObject go in moveSelectorList)
+        {
+            Destroy(go);
+        }
+        moveSelectorList.Clear();
     }
 
     void onFullscreenTap(object sender, EventArgs e)
     {
         if (moveSelection)
         {
+            bool pawnTaken = false;
             if (selectedMoveIndex != moveList.Count)
             {
+                pawnTaken = false;
                 int x = (int)moveList[selectedMoveIndex].x;
                 int y = (int)moveList[selectedMoveIndex].y;
+                //Debug.Log("Destination before move: " + checkersOnBoard[x, y]);
                 checkersOnBoard[x, y] = checkersOnBoard[curBoardPosX, curBoardPosY];
                 checkersOnBoard[curBoardPosX, curBoardPosY] = null;
                 checkersOnBoard[x, y].SetPosition(x, y);
+                //Debug.Log("origin after move: " + checkersOnBoard[curBoardPosX, curBoardPosY]);
+                //Debug.Log("Destination after move: " + checkersOnBoard[x, y]);
+
+                int moveX = x - curBoardPosX;
+                int moveY = y - curBoardPosY;
+                if (Math.Abs(moveX) > 1)
+                {
+                    int xi, yi;
+                    
+
+                    for (int i = 1; i < Math.Abs(moveX); i++)
+                    {
+                        if (moveX > 0)
+                        {
+                            xi = curBoardPosX + i;
+                        }
+                        else
+                        {
+                            xi = curBoardPosX - i;
+                        }
+                        if (moveY > 0)
+                        {
+                            yi = curBoardPosY + i;
+                        }
+                        else
+                        {
+                            yi = curBoardPosY - i;
+                        }
+
+                        if (checkersOnBoard[xi, yi] != null)
+                        {
+                            takenList.Add(checkersOnBoard[xi, yi]);
+                            checkersOnBoard[xi, yi] = null;
+                            pawnTaken = true;
+                        }
+                    }
+                }
+
                 curBoardPosX = x;
                 curBoardPosY = y;
-                //fieldSelector.transform.position = new Vector3(x, y, 0);
-                curPlayer = !curPlayer;
+                //Debug.Log("Destination after move and logic: " + checkersOnBoard[curBoardPosX, curBoardPosY]);
+
+                if (!pawnTaken)
+                {
+                    curPlayer = !curPlayer;
+                }
             }
+
             foreach (GameObject go in moveSelectorList)
             {
                 Destroy(go);
             }
+
             moveSelectorList.Clear();
-            moveSelection = false;
             moveList.Clear();
-            getAllMoves();
+            if (takenList.Count > 0)
+            {
+                //Debug.Log("origin before finding next capture: " + checkersOnBoard[curBoardPosX, curBoardPosY]);
+                moveList = findAllCaptureMoves(checkersOnBoard[curBoardPosX, curBoardPosY]);
+            }
+            if (moveList.Count == 0)
+            {
+                foreach(Checker taken in takenList)
+                {
+                    Destroy(taken.gameObject);
+                }
+                takenList.Clear();
+                if (pawnTaken)
+                {
+                    curPlayer = !curPlayer;
+                }
+                moveSelection = false;
+                getAllMoves();
+            }
         }
         else if (checkersOnBoard[curBoardPosX,curBoardPosY] != null)
         {
             Checker cur = checkersOnBoard[curBoardPosX, curBoardPosY];
             if (checkersToMove.Contains(cur))
             {
-                moveList = findAllClearMoves(cur);
+                moveList = findAllCaptureMoves(cur);
+                if (moveList.Count == 0)
+                {
+                    moveList = findAllClearMoves(cur);
+                }
                 selectedMoveIndex = moveList.Count;
                 if (selectedMoveIndex > 0)
                 {
