@@ -573,6 +573,10 @@ public class GameManager : MonoBehaviour {
                     curPlayer = !curPlayer;
                 }
                 moveSelection = false;
+                if ((checkersOnBoard[curBoardPosX,curBoardPosY].color==false && curBoardPosY == 7)||(checkersOnBoard[curBoardPosX, curBoardPosY].color == true && curBoardPosY == 0))
+                {
+                    checkersOnBoard[curBoardPosX, curBoardPosY].queen = true;
+                }
                 getAllMoves();
             }
         }
