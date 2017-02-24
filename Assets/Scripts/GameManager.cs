@@ -398,10 +398,12 @@ public class GameManager : MonoBehaviour {
             if (selectedMoveIndex == moveList.Count)
             {
                 fieldSelector.transform.position = new Vector3(curBoardPosX, curBoardPosY, -2f);
+                FindObjectOfType<Camera>().transform.position = new Vector3(curBoardPosX, curBoardPosY, -10);
             }
             else
             {
                 fieldSelector.transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -2f);
+                FindObjectOfType<Camera>().transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -10);
             }
         }
         else
@@ -437,6 +439,7 @@ public class GameManager : MonoBehaviour {
             curBoardPosY = curBoardPosY.Clamp(0, boardSize-1);
             Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
             fieldSelector.transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, 0.05f);
+            FindObjectOfType<Camera>().transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, -10);
             Debug.Log(curBoardPosX + "," + curBoardPosY);
         }
     }
@@ -467,6 +470,7 @@ public class GameManager : MonoBehaviour {
         }
         moveSelectorList.Clear();
 
+        Debug.Log("Possible moves: " + checkersToMove.Count.ToString());
         if (checkersToMove.Count == 0)
         {
             //currentPlayerLost
@@ -560,6 +564,10 @@ public class GameManager : MonoBehaviour {
                     curPlayer = !curPlayer;
                 }
                 moveSelection = false;
+                if ((checkersOnBoard[curBoardPosX,curBoardPosY].color==false && curBoardPosY == 7)||(checkersOnBoard[curBoardPosX, curBoardPosY].color == true && curBoardPosY == 0))
+                {
+                    checkersOnBoard[curBoardPosX, curBoardPosY].queen = true;
+                }
                 getAllMoves();
             }
         }
