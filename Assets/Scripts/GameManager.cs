@@ -399,11 +399,15 @@ public class GameManager : MonoBehaviour {
             {
                 fieldSelector.transform.position = new Vector3(curBoardPosX, curBoardPosY, -2f);
                 FindObjectOfType<Camera>().transform.position = new Vector3(curBoardPosX, curBoardPosY, -10);
+                //Char xMarker = (Char)(Convert.ToUInt16('a') + curBoardPosX);
+                TTSManager.Speak("Powrót", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             }
             else
             {
                 fieldSelector.transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -2f);
                 FindObjectOfType<Camera>().transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -10);
+                Char xMarker = (Char)(Convert.ToUInt16('a') + moveList[selectedMoveIndex].x);
+                TTSManager.Speak(xMarker + moveList[selectedMoveIndex].y.ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             }
         }
         else
@@ -437,6 +441,10 @@ public class GameManager : MonoBehaviour {
 
             curBoardPosX = curBoardPosX.Clamp(0, boardSize-1);
             curBoardPosY = curBoardPosY.Clamp(0, boardSize-1);
+            Char xMarker = (Char)(Convert.ToUInt16('a') + curBoardPosX);
+            TTSManager.Speak(xMarker + curBoardPosY.ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+            Debug.Log(xMarker);
+
             Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
             fieldSelector.transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, 0.05f);
             FindObjectOfType<Camera>().transform.position = new Vector3(selectorPosOnScreen.x, selectorPosOnScreen.y, -10);
@@ -470,10 +478,22 @@ public class GameManager : MonoBehaviour {
         }
         moveSelectorList.Clear();
 
-        Debug.Log("Possible moves: " + checkersToMove.Count.ToString());
+        //Debug.Log("Possible moves: " + checkersToMove.Count.ToString());
         if (checkersToMove.Count == 0)
         {
             //currentPlayerLost
+            string playerColor;
+            if (curPlayer == true)
+            {
+                playerColor = "biały";
+            }
+            else
+            {
+                playerColor = "czerwony";
+            }
+            string winMessage="Gracz " + playerColor + " zwyciężył";
+            TTSManager.Speak(winMessage, false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+            
             SceneManager.LoadScene(0);
         }
     }
@@ -526,6 +546,7 @@ public class GameManager : MonoBehaviour {
                             takenList.Add(checkersOnBoard[xi, yi]);
                             checkersOnBoard[xi, yi] = null;
                             pawnTaken = true;
+                            TTSManager.Speak("Bicie", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                         }
                     }
                 }
@@ -537,6 +558,7 @@ public class GameManager : MonoBehaviour {
                 if (!pawnTaken)
                 {
                     curPlayer = !curPlayer;
+                    TTSManager.Speak("Zmiana gracza", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                 }
             }
 
@@ -562,6 +584,7 @@ public class GameManager : MonoBehaviour {
                 if (pawnTaken)
                 {
                     curPlayer = !curPlayer;
+                    TTSManager.Speak("Zmiana gracza", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                 }
                 moveSelection = false;
                 if ((checkersOnBoard[curBoardPosX,curBoardPosY].color==false && curBoardPosY == 7)||(checkersOnBoard[curBoardPosX, curBoardPosY].color == true && curBoardPosY == 0))
@@ -569,6 +592,10 @@ public class GameManager : MonoBehaviour {
                     checkersOnBoard[curBoardPosX, curBoardPosY].queen = true;
                 }
                 getAllMoves();
+            }
+            else
+            {
+                TTSManager.Speak("Kontynuuj ruch", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             }
         }
         else if (checkersOnBoard[curBoardPosX,curBoardPosY] != null)
@@ -584,23 +611,20 @@ public class GameManager : MonoBehaviour {
                 selectedMoveIndex = moveList.Count;
                 if (selectedMoveIndex > 0)
                 {
+                    Char xMarker = (Char)(Convert.ToUInt16('a') + curBoardPosX);
+                    TTSManager.Speak("Ruch z pola " + xMarker + curBoardPosY.ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                     moveSelection = true;
-                }
-                else
-                {
-                    //TODO: message for player
-                    Debug.Log("No possible moves for this pawn");
                 }
             }
             else
             {
-                //TODO: message for player
+                TTSManager.Speak("Nie można wykonać ruchu tym pionkiem", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                 Debug.Log("No possible move");
             }
         }
         else
         {
-            //TODO: message for player
+            TTSManager.Speak("Brak pionka na tym polu", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             Debug.Log("No pawn to move");
         }
     }
