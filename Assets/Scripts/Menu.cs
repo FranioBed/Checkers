@@ -73,8 +73,7 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
 
     void goMainMenu()
     {
-        TTSManager.Speak("Kliknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
-        Debug.Log("2");
+        TTSManager.Speak("Menu główne, kliknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
         deleteTexts();
         menuTopText = Instantiate(startGame, gameObject.transform);
         menuTopText.transform.SetParent(gameObject.transform, true);
@@ -87,8 +86,7 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
 
     void goChooseVariant()
     {
-        TTSManager.Speak("Kliknij górną częśc ekranu by ustawić tryb 8 na 8 lub dolną by ustawić tryb 10 na 10", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
-        Debug.Log("3");
+        TTSManager.Speak("Ustawienia, kliknij górną częśc ekranu by ustawić tryb 8 na 8 lub dolną by ustawić tryb 10 na 10", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
         deleteTexts();
         menuTopText = Instantiate(eightBoardSize, gameObject.transform);
         menuTopText.transform.SetParent(gameObject.transform, true);
