@@ -23,6 +23,9 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
             PlayerPrefs.SetInt("BoardSize", 8);
         }
         goMainMenu();
+
+        TTSManager.Initialize(transform.name, "OnTTSInit");
+        TTSManager.SetLanguage(TTSManager.POLISH);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -36,6 +39,8 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
         else
         {
             topMenuClick();
+           TTSManager.Speak("Kliknij tutaj aby sprawdzic czy ten dźwięk działa", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+
         }
     }
 
@@ -68,6 +73,7 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
 
     void goMainMenu()
     {
+        TTSManager.Speak("Kliknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
         Debug.Log("2");
         deleteTexts();
         menuTopText = Instantiate(startGame, gameObject.transform);
@@ -81,6 +87,7 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
 
     void goChooseVariant()
     {
+        TTSManager.Speak("Kliknij górną częśc ekranu by ustawić tryb 8 na 8 lub dolną by ustawić tryb 10 na 10", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
         Debug.Log("3");
         deleteTexts();
         menuTopText = Instantiate(eightBoardSize, gameObject.transform);

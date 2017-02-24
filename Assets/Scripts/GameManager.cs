@@ -70,15 +70,15 @@ public class GameManager : MonoBehaviour {
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
         getAllMoves();
-        if (PlayerPrefs.HasKey("BoardSize"))
-            boardSize = PlayerPrefs.GetInt("BoardSize");
-        boardSize = PlayerPrefs.GetInt("BoardSize");
         //findAllClearMoves(checkers[2, 2]);
         //findAllCaptureMoves(checkers[2, 2]);
     }
 
     void generateBoard()
     {
+        if (PlayerPrefs.HasKey("BoardSize"))
+            boardSize = PlayerPrefs.GetInt("BoardSize");
+        boardSize = PlayerPrefs.GetInt("BoardSize");
         checkersOnBoard = new Checker[boardSize, boardSize];
         board = new GameObject[boardSize, boardSize];
         GameObject boardObject = Instantiate(new GameObject("Board"), gameObject.transform);
@@ -112,14 +112,6 @@ public class GameManager : MonoBehaviour {
                 board[i, j].transform.localPosition = new Vector3(i, j, 0);
             }
         }
-        //createChecker(checkerObject.transform,true, new int[] { 2, 2 });
-        //checkers[2, 2].queen = true;
-        //createChecker(checkerObject.transform, false, new int[] { 3, 3 });
-        //createChecker(checkerObject.transform, false, new int[] { 5, 5 });
-        //createChecker(checkerObject.transform, false, new int[] { 1, 3 });
-        //createChecker(checkerObject.transform, false, new int[] { 0, 4 });
-        //createChecker(checkerObject.transform, false, new int[] { 1, 1 });
-        //createChecker(checkerObject.transform, false, new int[] { 3, 1 });
 
     }
 
@@ -149,7 +141,6 @@ public class GameManager : MonoBehaviour {
         }
         else
         {
-           
             int side = 1;
             if (checker.color)
                 side = -1;
@@ -172,7 +163,7 @@ public class GameManager : MonoBehaviour {
                         if (canMoveToPosition(checkerPosition, new int[] { checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side }))
                             moveCaptureList.Add(new Vector2(checkerPosition[0] + 2 * side, checkerPosition[1] - 2 * side));
 
-
+            
             if (checkerPosition[0] - 2 * side < boardSize && checkerPosition[1] - 2 * side < boardSize && checkerPosition[0] - 2 * side >= 0 && checkerPosition[1] - 2 * side >= 0)
                 if (checkersOnBoard[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side] != null)                             //right up and destroy
                     if (checkersOnBoard[checkerPosition[0] - 1 * side, checkerPosition[1] - 1 * side].color != checker.color)
