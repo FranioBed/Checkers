@@ -22,10 +22,12 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
         {
             PlayerPrefs.SetInt("BoardSize", 8);
         }
-        goMainMenu();
-
         TTSManager.Initialize(transform.name, "OnTTSInit");
+        while (!TTSManager.IsInitialized())
+        {
+        }
         TTSManager.SetLanguage(TTSManager.POLISH);
+        goMainMenu();
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -39,7 +41,6 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
         else
         {
             topMenuClick();
-           TTSManager.Speak("Kliknij tutaj aby sprawdzic czy ten dźwięk działa", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
 
         }
     }
@@ -48,12 +49,17 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
     {
         if (menuStep==1)
         {
+            TTSManager.Stop();
             SceneManager.LoadScene(1);
         }
         else if(menuStep == 2)
         {
 
             PlayerPrefs.SetInt("BoardSize", 8);
+
+            TTSManager.Speak("Ustawiono tryb osiem na osiem", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+
+            while (TTSManager.IsSpeaking()) ;
             goMainMenu();
         }
 
@@ -67,13 +73,22 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
         else if (menuStep == 2)
         {
             PlayerPrefs.SetInt("BoardSize", 10);
+
+            TTSManager.Speak("Ustawiono tryb dziesięć na dziesięć", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+
+            while (TTSManager.IsSpeaking()) ;
+
+
             goMainMenu();
         }
     }
 
     void goMainMenu()
     {
-        TTSManager.Speak("Menu główne, kliknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+        if (TTSManager.IsInitialized())
+        {
+            TTSManager.Speak("Menu główne, kliknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+        }
         deleteTexts();
         menuTopText = Instantiate(startGame, gameObject.transform);
         menuTopText.transform.SetParent(gameObject.transform, true);
@@ -86,7 +101,10 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
 
     void goChooseVariant()
     {
-        TTSManager.Speak("Ustawienia, kliknij górną częśc ekranu by ustawić tryb 8 na 8 lub dolną by ustawić tryb 10 na 10", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+        if (TTSManager.IsInitialized())
+        {
+            TTSManager.Speak("Ustawienia, kliknij górną częśc ekranu by ustawić tryb osiem na osiem lub dolną by ustawić tryb dziesięć na dziesięć", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+        }
         deleteTexts();
         menuTopText = Instantiate(eightBoardSize, gameObject.transform);
         menuTopText.transform.SetParent(gameObject.transform, true);
