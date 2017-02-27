@@ -66,10 +66,16 @@ public class GameManager : MonoBehaviour {
     }
     
 	void Start () {
+
         fullscreenLayer.GetComponent<FlickGesture>().Flicked += fullscreenFlickedHandler;
         fullscreenLayer.GetComponent<TapGesture>().Tapped += onFullscreenTap;
         generateBoard();
         getAllMoves();
+        TTSManager.Speak("Start gry. Poruszaj się po planszy przesuwając palcem w prawo, lewo, górę lub dół. Dotknij ekran w celu wyboru pionka na bieżącym polu. Następnie przesuwaj palcem w lewo lub prawo aby wybrać pole docelowe spośród wszystkich dostępnych tym pionkiem. Zatwierdź ponownym dotknięciem ekranu. Ruchy odbywają się naprzemiennie, za wyjątkiem łańcuchów bić. Użyj przycisku wstecz, by wrócić do menu głównego.", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+
+        curBoardPosX = 0;
+        curBoardPosY = 0;
+
         //findAllClearMoves(checkers[2, 2]);
         //findAllCaptureMoves(checkers[2, 2]);
     }
@@ -407,7 +413,7 @@ public class GameManager : MonoBehaviour {
                 fieldSelector.transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -2f);
                 FindObjectOfType<Camera>().transform.position = new Vector3(moveList[selectedMoveIndex].x, moveList[selectedMoveIndex].y, -10);
                 Char xMarker = (Char)(Convert.ToUInt16('a') + moveList[selectedMoveIndex].x);
-                TTSManager.Speak(xMarker + moveList[selectedMoveIndex].y.ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                TTSManager.Speak(xMarker + " " + (moveList[selectedMoveIndex].y+1).ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             }
         }
         else
@@ -442,7 +448,7 @@ public class GameManager : MonoBehaviour {
             curBoardPosX = curBoardPosX.Clamp(0, boardSize-1);
             curBoardPosY = curBoardPosY.Clamp(0, boardSize-1);
             Char xMarker = (Char)(Convert.ToUInt16('a') + curBoardPosX);
-            TTSManager.Speak(xMarker + curBoardPosY.ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+            TTSManager.Speak(xMarker + " " + (curBoardPosY+1).ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             Debug.Log(xMarker);
 
             Vector3 selectorPosOnScreen = board[curBoardPosX, curBoardPosY].transform.position;
@@ -546,7 +552,6 @@ public class GameManager : MonoBehaviour {
                             takenList.Add(checkersOnBoard[xi, yi]);
                             checkersOnBoard[xi, yi] = null;
                             pawnTaken = true;
-                            TTSManager.Speak("Bicie", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                         }
                     }
                 }
@@ -558,7 +563,19 @@ public class GameManager : MonoBehaviour {
                 if (!pawnTaken)
                 {
                     curPlayer = !curPlayer;
-                    TTSManager.Speak("Zmiana gracza", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    if (curPlayer)
+                    {
+                        TTSManager.Speak("Gracz czerwony", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    }
+                    else
+                    {
+                        TTSManager.Speak("Gracz biały", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    }
+                }
+                else
+                {
+                    TTSManager.Speak("Bicie", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    while (TTSManager.IsSpeaking()) ;
                 }
             }
 
@@ -581,16 +598,36 @@ public class GameManager : MonoBehaviour {
                     Destroy(taken.gameObject);
                 }
                 takenList.Clear();
+                if ((checkersOnBoard[curBoardPosX,curBoardPosY].color==false && curBoardPosY == 7)||(checkersOnBoard[curBoardPosX, curBoardPosY].color == true && curBoardPosY == 0))
+                {
+                    if (checkersOnBoard[curBoardPosX, curBoardPosY].queen == false)
+                    {
+                        checkersOnBoard[curBoardPosX, curBoardPosY].queen = true;
+                        TTSManager.Speak("Awans królowej", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                        while (TTSManager.IsSpeaking()) ;
+                        if (curPlayer)
+                        {
+                            TTSManager.Speak("Gracz czerwony", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                        }
+                        else
+                        {
+                            TTSManager.Speak("Gracz biały", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                        }
+                    }
+                }
                 if (pawnTaken)
                 {
                     curPlayer = !curPlayer;
-                    TTSManager.Speak("Zmiana gracza", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    if (curPlayer)
+                    {
+                        TTSManager.Speak("Gracz czerwony", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    }
+                    else
+                    {
+                        TTSManager.Speak("Gracz biały", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    }
                 }
                 moveSelection = false;
-                if ((checkersOnBoard[curBoardPosX,curBoardPosY].color==false && curBoardPosY == 7)||(checkersOnBoard[curBoardPosX, curBoardPosY].color == true && curBoardPosY == 0))
-                {
-                    checkersOnBoard[curBoardPosX, curBoardPosY].queen = true;
-                }
                 getAllMoves();
             }
             else
@@ -612,13 +649,20 @@ public class GameManager : MonoBehaviour {
                 if (selectedMoveIndex > 0)
                 {
                     Char xMarker = (Char)(Convert.ToUInt16('a') + curBoardPosX);
-                    TTSManager.Speak("Ruch z pola " + xMarker + curBoardPosY.ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                    TTSManager.Speak("Ruch z pola " + xMarker + " " + (curBoardPosY+1).ToString(), false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
                     moveSelection = true;
                 }
             }
             else
             {
-                TTSManager.Speak("Nie można wykonać ruchu tym pionkiem", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                if (cur.color != curPlayer)
+                {
+                    TTSManager.Speak("Pionek przeciwnika", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                }
+                else
+                {
+                    TTSManager.Speak("Nie można wykonać ruchu tym pionkiem", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+                }
                 Debug.Log("No possible move");
             }
         }
@@ -626,6 +670,14 @@ public class GameManager : MonoBehaviour {
         {
             TTSManager.Speak("Brak pionka na tym polu", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
             Debug.Log("No pawn to move");
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
         }
     }
 

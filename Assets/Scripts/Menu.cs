@@ -8,22 +8,30 @@ using UnityEngine.UI;
 public class Menu : MonoBehaviour, IPointerClickHandler {
 
     int menuStep; // 1 - main menu,  2- choose variant
+    
+    public Text menuTopText;
+    public Text menuBottomText;
 
-    public GameObject startGame;
-    public GameObject options;
-    public GameObject eightBoardSize;
-    public GameObject teenBoardSize;
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TTSManager.Speak("Do widzenia", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+            Application.Quit();
+        }
+    }
 
-    GameObject menuTopText;
-    GameObject menuBottomText;
     void Start()
     {
+        
         if (!PlayerPrefs.HasKey("BoardSize"))
         {
             PlayerPrefs.SetInt("BoardSize", 8);
         }
         TTSManager.Initialize(transform.name, "OnTTSInit");
-        while (!TTSManager.IsInitialized())
+        DateTime time1 = System.DateTime.Now;
+
+        while (!TTSManager.IsInitialized() && (System.DateTime.Now - time1).TotalSeconds<2)
         {
         }
         TTSManager.SetLanguage(TTSManager.POLISH);
@@ -87,15 +95,12 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
     {
         if (TTSManager.IsInitialized())
         {
-            TTSManager.Speak("Menu główne, kliknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+            TTSManager.Speak("Menu główne. Dotknij górną częśc ekranu by rozpocząć grę lub dolną by przejść do ustawień", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
         }
-        deleteTexts();
-        menuTopText = Instantiate(startGame, gameObject.transform);
-        menuTopText.transform.SetParent(gameObject.transform, true);
-        menuTopText.transform.localPosition = new Vector3(0, 200, 0);
-        menuBottomText = Instantiate(options, gameObject.transform);
-        menuBottomText.transform.SetParent(gameObject.transform, false);
-        menuBottomText.transform.localPosition = new Vector3(0,-200,0);
+        menuTopText.text = "START";
+        menuTopText.fontSize = 100;
+        menuBottomText.text = "USTAWIENIA";
+        menuBottomText.fontSize = 60;
         menuStep = 1;
     }
 
@@ -103,43 +108,14 @@ public class Menu : MonoBehaviour, IPointerClickHandler {
     {
         if (TTSManager.IsInitialized())
         {
-            TTSManager.Speak("Ustawienia, kliknij górną częśc ekranu by ustawić tryb osiem na osiem lub dolną by ustawić tryb dziesięć na dziesięć", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
+            TTSManager.Speak("Ustawienia. Dotknij górną częśc ekranu by ustawić tryb osiem na osiem lub dolną by ustawić tryb dziesięć na dziesięć", false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_0");
         }
-        deleteTexts();
-        menuTopText = Instantiate(eightBoardSize, gameObject.transform);
-        menuTopText.transform.SetParent(gameObject.transform, true);
-        menuTopText.transform.localPosition = new Vector3(0, 200, 0);
-        menuBottomText = Instantiate(teenBoardSize, gameObject.transform);
-        menuBottomText.transform.SetParent(gameObject.transform, false);
-        menuBottomText.transform.localPosition = new Vector3(0, -200, 0);
+        menuTopText.text = "8 x 8";
+        menuTopText.fontSize = 120;
+        menuBottomText.text = "10 x 10";
+        menuBottomText.fontSize = 120;
         menuStep = 2;
     }
 
-    void deleteTexts()
-    {
-        if (menuTopText != null)
-        {
-            try
-            {
-                Destroy(menuTopText);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-        if (menuBottomText != null)
-        {
-            try
-            {
-                Destroy(menuBottomText);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-    }
+  
 }
